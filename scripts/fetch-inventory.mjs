@@ -2,11 +2,12 @@
 /**
  * Fetch Tesla public used / CPO inventory and write data/inventory.json.
  *
- * Tesla frequently returns 403 to datacenter IPs and blocks CORS in browsers.
- * Run locally: `npm run fetch`
+ * Tesla frequently returns Akamai HTTP 403 to datacenter IPs (inventory API and
+ * /used HTML). The Canada pre-owned marketing page may still load.
+ * Run locally from an unblocked network: `npm run fetch`
  *
- * On failure this script leaves the existing (SAMPLE) catalog in place unless
- * --replace-on-fail is passed.
+ * On 403 this script does not invent cars. The website then feed-throughs
+ * buyers to Tesla official used / pre-owned inventory.
  */
 import fs from "node:fs";
 import path from "node:path";

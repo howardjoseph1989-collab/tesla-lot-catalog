@@ -1,7 +1,10 @@
-/** Shared catalog math and filters. Browser + Node. */
+/** Shared catalog math, Tesla official URLs, and filters. Browser + Node. */
 
 export const MARKUP = 1.2;
 export const CONTACT_EMAIL = "howardjoseph1989@gmail.com";
+
+export const TESLA_PREOWNED_CA = "https://www.tesla.com/en_ca/pre-owned";
+export const TESLA_USED_CA = "https://www.tesla.com/en_ca/used";
 
 export const MODELS = [
   { id: "3", label: "Model 3", teslaCode: "m3" },
@@ -27,22 +30,49 @@ export function usd(n) {
   }).format(n);
 }
 
+export function cad(n) {
+  return new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency: "CAD",
+    maximumFractionDigits: 0
+  }).format(n);
+}
+
+export function money(n, region = "CA") {
+  return region === "US" ? usd(n) : cad(n);
+}
+
 export function milesLabel(n) {
   return `${new Intl.NumberFormat("en-US").format(Math.round(n))} mi`;
 }
 
-export function teslaUsedSearchUrl(teslaCode) {
-  return `https://www.tesla.com/inventory/used/${teslaCode}`;
+export function teslaUsedSearchUrl(teslaCode, region = "CA") {
+  const code = teslaCode || "m3";
+  if (region === "US") return `https://www.tesla.com/inventory/used/${code}`;
+  return `https://www.tesla.com/en_ca/inventory/used/${code}`;
 }
 
-export function teslaListingUrl(listing) {
+export function teslaOfficialInventoryUrl({ region = "CA", teslaCode = "", zip = "" } = {}) {
+  if (!teslaCode) {
+    return region === "US" ? "https://www.tesla.com/inventory/used/m3" : TESLA_USED_CA;
+  }
+  const url = new URL(teslaUsedSearchUrl(teslaCode, region));
+  url.searchParams.set("arrangeby", "plh");
+  if (zip) url.searchParams.set("zip", zip);
+  return url.toString();
+}
+
+export function teslaListingUrl(listing, region = "CA") {
   if (listing.sample) {
-    return teslaUsedSearchUrl(listing.teslaCode || "m3");
+    return teslaUsedSearchUrl(listing.teslaCode || "m3", region);
   }
   const code = listing.teslaCode || "m3";
   const vin = listing.vin;
-  if (vin) return `https://www.tesla.com/${code}/order/${encodeURIComponent(vin)}`;
-  return teslaUsedSearchUrl(code);
+  if (vin) {
+    const path = region === "CA" ? `/en_ca/${code}/order/` : `/${code}/order/`;
+    return `https://www.tesla.com${path}${encodeURIComponent(vin)}`;
+  }
+  return teslaUsedSearchUrl(code, region);
 }
 
 export function applyFilters(listings, filters = {}) {
@@ -94,8 +124,29 @@ export function uniqueLocations(listings) {
   return [...new Set(listings.map((l) => l.location).filter(Boolean))].sort();
 }
 
-export function yearBounds(listings) {
-  if (!listings.length) return { min: 2018, max: new Date().getFullYear() };
-  const years = listings.map((l) => l.year);
-  return { min: Math.min(...years), max: Math.max(...years) };
+export function isLivePayload(payload) {
+  if (!payload || payload.source === "sample") return false;
+  const rows = payload.listings || [];
+  return rows.length > 0 && rows.every((row) => row.sample !== true);
+}
+
+export function teslaInventoryApiUrl({ teslaCode = "m3", market = "CA", count = 24 } = {}) {
+  const payload = {
+    query: {
+      model: teslaCode,
+      condition: "used",
+      arrangeby: "Price",
+      order: "asc",
+      market,
+      language: "en",
+      super_region: "north america"
+    },
+    count,
+    offset: 0,
+    outsideOffset: 0,
+    outsideSearch: true
+  };
+  return `https://www.tesla.com/inventory/api/v4/inventory-results?${new URLSearchParams({
+    query: JSON.stringify(payload)
+  })}`;
 }

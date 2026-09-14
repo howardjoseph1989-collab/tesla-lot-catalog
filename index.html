@@ -1,145 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-CA">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LOT CATALOG — Independent Tesla used / CPO reseller</title>
+    <title>Lot Catalog — Independent Tesla used / CPO reseller</title>
     <meta
       name="description"
-      content="Independent reseller catalog of Tesla used and Certified Pre-Owned vehicles. Firm prices = Tesla list × 1.20. Not Tesla, Inc."
+      content="Independent reseller. Browse Tesla official used / pre-owned inventory, then buy from us at Tesla list × 1.20 (firm). Not Tesla, Inc."
     />
-    <meta name="theme-color" content="#070708" />
+    <meta name="theme-color" content="#171a20" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <a class="skip" href="#catalog">Skip to catalog</a>
+    <a class="skip" href="#browse">Skip to inventory</a>
 
     <div class="disclaimer" role="note">
-      Independent reseller catalog — not Tesla, Inc. Prices firm (Tesla used/CPO list × 1.20).
+      Independent reseller — not Tesla, Inc. Prices firm (Tesla used/CPO list × 1.20).
     </div>
 
-    <header class="top">
+    <header class="nav">
       <div class="brand">
-        <span class="mark" aria-hidden="true">LOT</span>
+        <span class="mark">LOT</span>
         <div>
-          <h1>Lot Catalog</h1>
-          <p>Independent Tesla used / Certified Pre-Owned inventory. We are not Tesla.</p>
+          <strong>Lot Catalog</strong>
+          <span>Independent used Tesla reseller</span>
         </div>
       </div>
-      <a class="cta" href="#contact">Email to buy</a>
+      <nav>
+        <a href="#browse">Browse</a>
+        <a href="#price">Our price</a>
+        <a class="cta" href="#contact">Email to buy</a>
+      </nav>
     </header>
 
-    <section class="status" id="data-status" aria-live="polite"></section>
+    <section class="hero">
+      <p class="eyebrow">Not affiliated with Tesla</p>
+      <h1>Pre-owned Tesla vehicles, sold by us</h1>
+      <p class="lede">
+        Official cars live on Tesla’s used / Certified Pre-Owned inventory. We resell them at a
+        <strong>firm +20%</strong> asking price: Tesla’s list × 1.20.
+      </p>
+      <div class="hero-actions">
+        <a
+          class="cta primary"
+          id="primary-tesla-cta"
+          href="https://www.tesla.com/en_ca/pre-owned"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Browse Tesla official pre-owned
+        </a>
+        <a
+          class="cta ghost"
+          href="https://www.tesla.com/en_ca/used"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Open Tesla used inventory
+        </a>
+      </div>
+    </section>
 
-    <main id="catalog">
-      <form class="filters" id="filters" aria-label="Inventory filters">
-        <div class="filter-row models" role="group" aria-label="Model">
-          <label class="chip">
-            <input type="radio" name="model" value="" checked />
-            <span>All</span>
-          </label>
-          <label class="chip">
-            <input type="radio" name="model" value="3" />
-            <span>3</span>
-          </label>
-          <label class="chip">
-            <input type="radio" name="model" value="Y" />
-            <span>Y</span>
-          </label>
-          <label class="chip">
-            <input type="radio" name="model" value="S" />
-            <span>S</span>
-          </label>
-          <label class="chip">
-            <input type="radio" name="model" value="X" />
-            <span>X</span>
-          </label>
-          <label class="chip">
-            <input type="radio" name="model" value="Cybertruck" />
-            <span>Cybertruck</span>
-          </label>
+    <p class="status" id="data-status" aria-live="polite"></p>
+
+    <main id="browse">
+      <form class="filters" id="filters" aria-label="Tesla official inventory filters">
+        <div class="filter-head">
+          <h2>Used inventory</h2>
+          <p>Same browse controls as Tesla used inventory. Results open on Tesla’s official site unless live Tesla data loads here.</p>
         </div>
+
+        <fieldset class="chips" id="region">
+          <legend>Market</legend>
+          <label class="chip"><input type="radio" name="region" value="CA" checked /><span>Canada</span></label>
+          <label class="chip"><input type="radio" name="region" value="US" /><span>United States</span></label>
+        </fieldset>
+
+        <fieldset class="chips">
+          <legend>Model</legend>
+          <label class="chip"><input type="radio" name="model" value="" checked /><span>All</span></label>
+          <label class="chip"><input type="radio" name="model" value="3" /><span>3</span></label>
+          <label class="chip"><input type="radio" name="model" value="Y" /><span>Y</span></label>
+          <label class="chip"><input type="radio" name="model" value="S" /><span>S</span></label>
+          <label class="chip"><input type="radio" name="model" value="X" /><span>X</span></label>
+          <label class="chip"><input type="radio" name="model" value="Cybertruck" /><span>Cybertruck</span></label>
+        </fieldset>
 
         <div class="filter-grid">
-          <label>
-            Year from
-            <input type="number" name="yearMin" min="2012" max="2030" placeholder="2018" />
-          </label>
-          <label>
-            Year to
-            <input type="number" name="yearMax" min="2012" max="2030" placeholder="2026" />
-          </label>
-          <label>
-            Max miles
-            <input type="number" name="milesMax" min="0" step="1000" placeholder="Any" />
-          </label>
-          <label>
-            Max our price ($)
-            <input type="number" name="priceMax" min="0" step="1000" placeholder="Any" />
-          </label>
-          <label>
-            Location
-            <input list="locations" name="location" placeholder="City or state" autocomplete="off" />
-            <datalist id="locations"></datalist>
-          </label>
-          <label>
-            Sort
-            <select name="sort">
-              <option value="price-asc">Our price: low → high</option>
-              <option value="price-desc">Our price: high → low</option>
-              <option value="miles-asc">Miles: low → high</option>
-              <option value="miles-desc">Miles: high → low</option>
-              <option value="year-desc">Year: newest</option>
-              <option value="year-asc">Year: oldest</option>
-            </select>
-          </label>
+          <label>Year from <input type="number" name="yearMin" min="2012" max="2030" placeholder="Any" /></label>
+          <label>Year to <input type="number" name="yearMax" min="2012" max="2030" placeholder="Any" /></label>
+          <label>Max miles / km <input type="number" name="milesMax" min="0" step="1000" placeholder="Any" /></label>
+          <label>Max our price <input type="number" name="priceMax" min="0" step="1000" placeholder="Any" /></label>
+          <label>Location / postal <input name="location" placeholder="City, province, or postal" autocomplete="off" /></label>
         </div>
+
         <div class="filter-actions">
-          <p class="count" id="result-count">Loading inventory…</p>
-          <button type="reset" class="ghost">Reset filters</button>
+          <button type="submit" class="cta primary" id="open-tesla">Open matching Tesla official listings</button>
+          <p class="count" id="result-count"></p>
         </div>
       </form>
 
+      <section class="model-grid" id="model-portals" aria-label="Official Tesla used inventory by model"></section>
+
       <section class="grid" id="results" aria-live="polite"></section>
-      <p class="empty" id="empty" hidden>No vehicles match those filters. Reset or widen miles / price / year.</p>
+      <p class="empty" id="empty" hidden></p>
     </main>
+
+    <section class="price" id="price">
+      <div>
+        <h2>Our firm price</h2>
+        <p>
+          Tesla shows the list price on each official used / CPO card. We sell that same car at
+          <strong>Tesla list × 1.20</strong>. No haggling.
+        </p>
+      </div>
+      <form class="calc" id="calc">
+        <label>
+          Tesla list price
+          <input name="list" type="number" min="1" step="1" required placeholder="e.g. 42990" />
+        </label>
+        <p class="calc-out" id="calc-out">Our firm price: Tesla list × 1.20</p>
+      </form>
+    </section>
 
     <section class="contact" id="contact">
       <div>
         <h2>Buy from this lot</h2>
-        <p>
-          Firm asking price is Tesla used/CPO list × 1.20. Email
-          <a href="mailto:howardjoseph1989@gmail.com?subject=Lot%20Catalog%20inquiry">howardjoseph1989@gmail.com</a>
-          with the VIN on the card.
-        </p>
-        <a class="cta" href="mailto:howardjoseph1989@gmail.com?subject=Lot%20Catalog%20inquiry">Open email</a>
+        <ol>
+          <li>Open Tesla official used / pre-owned inventory.</li>
+          <li>Copy the listing URL, VIN, and Tesla list price.</li>
+          <li>Email us. We confirm the firm price (list × 1.20) and handle the sale.</li>
+        </ol>
+        <a class="cta primary" href="mailto:howardjoseph1989@gmail.com?subject=Lot%20Catalog%20inquiry">howardjoseph1989@gmail.com</a>
       </div>
       <form class="inquiry" id="inquiry">
-        <label>
-          Your name
-          <input name="name" required autocomplete="name" />
-        </label>
-        <label>
-          Your email
-          <input name="email" type="email" required autocomplete="email" />
-        </label>
-        <label>
-          VIN / listing
-          <input name="vin" placeholder="SMPL…" />
-        </label>
-        <label>
-          Message
-          <textarea name="message" rows="4" required placeholder="I want to buy this vehicle at the listed firm price."></textarea>
-        </label>
-        <button type="submit" class="cta">Compose message</button>
+        <label>Your name <input name="name" required autocomplete="name" /></label>
+        <label>Your email <input name="email" type="email" required autocomplete="email" /></label>
+        <label>Tesla listing URL or VIN <input name="vin" placeholder="https://www.tesla.com/…" /></label>
+        <label>Tesla list price <input name="list" type="number" min="1" step="1" placeholder="From the Tesla card" /></label>
+        <label>Message <textarea name="message" rows="4" required placeholder="I want this official Tesla used vehicle at your firm +20% price."></textarea></label>
+        <button type="submit" class="cta primary">Compose message</button>
       </form>
     </section>
 
     <footer>
       <p>
-        Lot Catalog is an independent reseller storefront. Not affiliated with Tesla, Inc.
-        Tesla names are used only to describe the vehicles offered. All prices are firm.
+        Lot Catalog is an independent reseller. Not Tesla, Inc. Tesla names describe vehicles listed
+        on Tesla’s official used / pre-owned inventory.
+        <a href="https://www.tesla.com/en_ca/pre-owned" rel="noopener noreferrer" target="_blank">Tesla Canada pre-owned</a>
+        ·
+        <a href="https://www.tesla.com/en_ca/used" rel="noopener noreferrer" target="_blank">Tesla Canada used inventory</a>
       </p>
     </footer>
 

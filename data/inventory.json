@@ -2,7 +2,7 @@
   "source": "sample",
   "fetchedAt": "2026-09-14T00:00:00.000Z",
   "markup": 1.2,
-  "note": "SAMPLE listings. Tesla public used inventory returned 403 from this host. Not live Tesla stock. VINs are synthetic and prefixed SMPL.",
+  "note": "NOT SHOWN as the product catalog. SAMPLE only. Tesla used inventory API returned Akamai HTTP 403. The website feed-throughs to Tesla official used / pre-owned pages instead of displaying these rows.",
   "listings": [
     {
       "id": "SMPL3Y20220000001",

@@ -1,44 +1,25 @@
 # Tesla Lot Catalog
 
-**Live demo:** https://howardjoseph1989-collab.github.io/tesla-lot-catalog/
+**Live demo (HTTPS):** https://howardjoseph1989-collab.github.io/tesla-lot-catalog/
 
-Independent reseller catalog of Tesla used / Certified Pre-Owned inventory. **Not Tesla, Inc.**
+**Mode shipped: feed-through to Tesla official used / pre-owned inventory.**
 
-## Pricing
+Tesla’s official used inventory API and used-inventory HTML (`/inventory/api/v4/inventory-results`, `/en_ca/used`, `/inventory/used/{model}`) return **Akamai HTTP 403 Access Denied** from this host (Chrome, curl, and Chrome TLS impersonation). The Canada pre-owned marketing page `https://www.tesla.com/en_ca/pre-owned` loads, but it is not a car list. Tesla also sends `X-Frame-Options: SAMEORIGIN`, so official inventory cannot be embedded.
 
-Our asking price is **firm**: Tesla used/CPO list × **1.20** (+20% middleman markup). Shown on every listing.
+This site therefore:
 
-## What this site is
+1. Tries live Tesla used inventory first (browser + `scripts/fetch-inventory.mjs`). If that succeeds, cards show **official Tesla cars** with **our firm price = Tesla list × 1.20**.
+2. Does **not** present SAMPLE / invented VINs as stock.
+3. Falls back to a Tesla-style browse (model / year / miles / price / location) whose primary CTA **opens Tesla official used / pre-owned pages** (`en_ca/pre-owned`, `en_ca/used`, and per-model used inventory). Buyers then email us the Tesla listing; we sell at list × 1.20.
 
-A storefront that lists Tesla used / CPO vehicles with:
+Independent reseller — not Tesla, Inc.
 
-- Model, year, miles, Tesla list price, our firm price (+20%)
-- Options summary and a link to the original Tesla used listing (or Tesla used search for SAMPLE rows)
-- Filters: model (3 / Y / S / X / Cybertruck), year, miles, our price, location
-- Mobile-friendly high-contrast UI
-- Contact: [howardjoseph1989@gmail.com](mailto:howardjoseph1989@gmail.com)
+Contact: [howardjoseph1989@gmail.com](mailto:howardjoseph1989@gmail.com)
 
-Banner on every page: *Independent reseller catalog — not Tesla, Inc. Prices firm (Tesla used/CPO list × 1.20).*
-
-## Data
-
-Tesla’s public used inventory API (`/inventory/api/v4/inventory-results`) is preferred. Datacenter IPs commonly receive **HTTP 403**. This repo includes:
-
-1. `scripts/fetch-inventory.mjs` — fetch US used inventory for 3 / Y / S / X / Cybertruck
-2. `data/inventory.json` — seeded **SAMPLE** listings (VINs start with `SMPL`, every card is badged SAMPLE)
-
-Never treat SAMPLE VINs as real Tesla stock.
+## Local
 
 ```bash
 npm test
-npm run fetch    # retries Tesla public inventory; keeps SAMPLE file if blocked
+npm run fetch    # retries Tesla public used inventory; keeps feed-through if 403
 python3 -m http.server 4173
 ```
-
-After a successful fetch, `data/inventory.json` is rewritten with `source: "tesla-public"` and real listing URLs.
-
-## GitHub Pages
-
-This repo deploys with GitHub Actions (`.github/workflows/pages.yml`). If `github.io` is not live yet, enable **Settings → Pages → GitHub Actions**, or use the jsDelivr / raw.githack mirror printed after merge.
-
-Tesla names describe the vehicles. Lot Catalog is not affiliated with Tesla, Inc.

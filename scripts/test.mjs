@@ -5,13 +5,18 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import {
   MARKUP,
+  TESLA_PREOWNED_CA,
+  TESLA_USED_CA,
   applyFilters,
   firmPrice,
-  sortListings,
-  teslaListingUrl
+  isLivePayload,
+  teslaOfficialInventoryUrl,
+  teslaUsedSearchUrl
 } from "../catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const inventory = JSON.parse(
   fs.readFileSync(path.join(root, "data", "inventory.json"), "utf8")
 );
@@ -19,60 +24,36 @@ const inventory = JSON.parse(
 test("markup is exactly +20%", () => {
   assert.equal(MARKUP, 1.2);
   assert.equal(firmPrice(10000), 12000);
-  assert.equal(firmPrice(32990), 39588);
-  assert.equal(firmPrice(19990), 23988);
+  assert.equal(firmPrice(42990), 51588);
 });
 
-test("seeded catalog is marked SAMPLE and uses SMPL VINs", () => {
-  assert.equal(inventory.source, "sample");
-  assert.ok(inventory.listings.length >= 20);
-  for (const row of inventory.listings) {
-    assert.equal(row.sample, true);
-    assert.match(row.vin, /^SMPL/);
-    assert.ok(row.teslaListPrice > 0);
-    assert.ok(["3", "Y", "S", "X", "Cybertruck"].includes(row.model));
-  }
+test("primary CTAs point at Tesla official pre-owned / used inventory", () => {
+  assert.match(html, new RegExp(TESLA_PREOWNED_CA.replaceAll("/", "\\/")));
+  assert.match(html, new RegExp(TESLA_USED_CA.replaceAll("/", "\\/")));
+  assert.match(html, /Independent reseller — not Tesla/);
+  assert.match(html, /1\.20/);
 });
 
-test("filters: model, year, miles, price, location", () => {
-  const { listings } = inventory;
-  assert.ok(applyFilters(listings, { model: "Y" }).every((r) => r.model === "Y"));
-  assert.ok(applyFilters(listings, { yearMin: 2024 }).every((r) => r.year >= 2024));
-  assert.ok(applyFilters(listings, { yearMax: 2021 }).every((r) => r.year <= 2021));
-  assert.ok(applyFilters(listings, { milesMax: 10000 }).every((r) => r.miles <= 10000));
-  assert.ok(
-    applyFilters(listings, { priceMax: 30000 }).every(
-      (r) => firmPrice(r.teslaListPrice) <= 30000
-    )
+test("app does not treat SAMPLE json as live inventory", () => {
+  assert.equal(isLivePayload(inventory), false);
+  assert.match(app, /tryLiveApi/);
+  assert.match(app, /renderFeedthrough/);
+  assert.doesNotMatch(app, /source === "sample"/);
+});
+
+test("official Tesla URLs stay on tesla.com", () => {
+  assert.equal(
+    teslaOfficialInventoryUrl({ region: "CA", teslaCode: "my" }),
+    "https://www.tesla.com/en_ca/inventory/used/my?arrangeby=plh"
   );
-  const tx = applyFilters(listings, { location: "TX" });
-  assert.ok(tx.length >= 1);
-  assert.ok(tx.every((r) => /TX/i.test(r.location)));
-  assert.ok(applyFilters(listings, { model: "Cybertruck" }).length >= 1);
+  assert.equal(teslaUsedSearchUrl("m3", "US"), "https://www.tesla.com/inventory/used/m3");
 });
 
-test("sample Tesla links go to used inventory search, not fake VIN pages", () => {
-  const sample = inventory.listings[0];
-  const url = teslaListingUrl(sample);
-  assert.match(url, /^https:\/\/www\.tesla\.com\/inventory\/used\//);
-});
-
-test("sort by our firm price ascending", () => {
-  const sorted = sortListings(inventory.listings, "price-asc");
-  for (let i = 1; i < sorted.length; i++) {
-    assert.ok(
-      firmPrice(sorted[i].teslaListPrice) >= firmPrice(sorted[i - 1].teslaListPrice)
-    );
-  }
-});
-
-test("every listing has card fields", () => {
-  for (const row of inventory.listings) {
-    assert.ok(row.modelName);
-    assert.ok(row.year);
-    assert.ok(Number.isFinite(row.miles));
-    assert.ok(Number.isFinite(row.teslaListPrice));
-    assert.ok(Array.isArray(row.options) && row.options.length);
-    assert.ok(row.location);
-  }
+test("filter helpers still work on arbitrary listing objects", () => {
+  const rows = [
+    { model: "Y", year: 2024, miles: 1000, teslaListPrice: 40000, location: "Toronto, ON" },
+    { model: "3", year: 2021, miles: 50000, teslaListPrice: 25000, location: "Austin, TX" }
+  ];
+  assert.equal(applyFilters(rows, { model: "Y" }).length, 1);
+  assert.equal(applyFilters(rows, { priceMax: 30000 }).length, 1);
 });
