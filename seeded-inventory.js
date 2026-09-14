@@ -1,4 +1,5 @@
-{
+/** Seeded SAMPLE catalog. Tesla live API is Akamai 403 from this host. */
+export const SEEDED = {
   "source": "sample",
   "fetchedAt": "2026-09-14T00:00:00.000Z",
   "markup": 1.2,
@@ -603,4 +604,4 @@
       "ourPrice": 23988
     }
   ]
-}
+};

@@ -5,7 +5,6 @@ import {
   TESLA_USED_CA,
   applyFilters,
   firmPrice,
-  isLivePayload,
   milesLabel,
   money,
   sortListings,
@@ -14,6 +13,7 @@ import {
   teslaOfficialInventoryUrl,
   usd
 } from "./catalog.js";
+import { SEEDED } from "./seeded-inventory.js";
 
 const resultsEl = document.getElementById("results");
 const emptyEl = document.getElementById("empty");
@@ -69,7 +69,7 @@ function escapeHtml(value) {
 }
 
 function card(item) {
-  const ours = firmPrice(item.teslaListPrice);
+  const ours = item.ourPrice ?? firmPrice(item.teslaListPrice);
   const url = teslaListingUrl(item, region);
   const options = (item.options || []).slice(0, 6);
   const sample = item.sample ? `<span class="badge sample">SAMPLE</span>` : "";
@@ -197,12 +197,18 @@ async function tryLiveApi(market) {
   return collected;
 }
 
-async function tryBakedLive() {
-  const res = await fetch("./data/inventory.json", { cache: "no-store" });
-  if (!res.ok) return null;
-  const payload = await res.json();
-  if (!isLivePayload(payload)) return null;
-  return payload.listings;
+async function loadSeeded() {
+  for (const path of ["./inventory.json", "./data/inventory.json"]) {
+    try {
+      const res = await fetch(path, { cache: "no-store" });
+      if (!res.ok) continue;
+      const payload = await res.json();
+      if (Array.isArray(payload.listings) && payload.listings.length) return payload;
+    } catch {
+      /* try next path */
+    }
+  }
+  return null;
 }
 
 async function load() {
@@ -219,12 +225,18 @@ async function load() {
     /* datacenters and browsers are commonly 403 / CORS-blocked by Akamai */
   }
 
-  const baked = await tryBakedLive();
-  if (baked) {
-    listings = baked;
+  const seeded = (await loadSeeded()) || SEEDED;
+  if (seeded) {
+    listings = seeded.listings.map((row) => ({
+      ...row,
+      ourPrice: row.ourPrice ?? firmPrice(row.teslaListPrice)
+    }));
     live = true;
-    statusEl.dataset.kind = "live";
-    statusEl.textContent = "Tesla official used inventory snapshot (not SAMPLE). Our asking price is Tesla list × 1.20 (firm).";
+    const sample = seeded.source === "sample" || listings.some((row) => row.sample);
+    statusEl.dataset.kind = sample ? "blocked" : "live";
+    statusEl.textContent = sample
+      ? "Tesla live inventory API blocked (Akamai HTTP 403). Showing SAMPLE used/CPO listings. Every card is badged SAMPLE. Our firm price = Tesla list × 1.20."
+      : "Tesla official used inventory snapshot. Our asking price is Tesla list × 1.20 (firm).";
     renderLive();
     return;
   }
@@ -233,7 +245,7 @@ async function load() {
 }
 
 formEl.addEventListener("change", () => {
-  if (live) render();
+  if (listings.length) render();
   else renderPortals();
 });
 
