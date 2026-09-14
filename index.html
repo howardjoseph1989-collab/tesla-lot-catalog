@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LOT CATALOG — Independent Tesla used / CPO reseller</title>
+    <meta
+      name="description"
+      content="Independent reseller catalog of Tesla used and Certified Pre-Owned vehicles. Firm prices = Tesla list × 1.20. Not Tesla, Inc."
+    />
+    <meta name="theme-color" content="#070708" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#catalog">Skip to catalog</a>
+
+    <div class="disclaimer" role="note">
+      Independent reseller catalog — not Tesla, Inc. Prices firm (Tesla used/CPO list × 1.20).
+    </div>
+
+    <header class="top">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">LOT</span>
+        <div>
+          <h1>Lot Catalog</h1>
+          <p>Independent Tesla used / Certified Pre-Owned inventory. We are not Tesla.</p>
+        </div>
+      </div>
+      <a class="cta" href="#contact">Email to buy</a>
+    </header>
+
+    <section class="status" id="data-status" aria-live="polite"></section>
+
+    <main id="catalog">
+      <form class="filters" id="filters" aria-label="Inventory filters">
+        <div class="filter-row models" role="group" aria-label="Model">
+          <label class="chip">
+            <input type="radio" name="model" value="" checked />
+            <span>All</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="model" value="3" />
+            <span>3</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="model" value="Y" />
+            <span>Y</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="model" value="S" />
+            <span>S</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="model" value="X" />
+            <span>X</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="model" value="Cybertruck" />
+            <span>Cybertruck</span>
+          </label>
+        </div>
+
+        <div class="filter-grid">
+          <label>
+            Year from
+            <input type="number" name="yearMin" min="2012" max="2030" placeholder="2018" />
+          </label>
+          <label>
+            Year to
+            <input type="number" name="yearMax" min="2012" max="2030" placeholder="2026" />
+          </label>
+          <label>
+            Max miles
+            <input type="number" name="milesMax" min="0" step="1000" placeholder="Any" />
+          </label>
+          <label>
+            Max our price ($)
+            <input type="number" name="priceMax" min="0" step="1000" placeholder="Any" />
+          </label>
+          <label>
+            Location
+            <input list="locations" name="location" placeholder="City or state" autocomplete="off" />
+            <datalist id="locations"></datalist>
+          </label>
+          <label>
+            Sort
+            <select name="sort">
+              <option value="price-asc">Our price: low → high</option>
+              <option value="price-desc">Our price: high → low</option>
+              <option value="miles-asc">Miles: low → high</option>
+              <option value="miles-desc">Miles: high → low</option>
+              <option value="year-desc">Year: newest</option>
+              <option value="year-asc">Year: oldest</option>
+            </select>
+          </label>
+        </div>
+        <div class="filter-actions">
+          <p class="count" id="result-count">Loading inventory…</p>
+          <button type="reset" class="ghost">Reset filters</button>
+        </div>
+      </form>
+
+      <section class="grid" id="results" aria-live="polite"></section>
+      <p class="empty" id="empty" hidden>No vehicles match those filters. Reset or widen miles / price / year.</p>
+    </main>
+
+    <section class="contact" id="contact">
+      <div>
+        <h2>Buy from this lot</h2>
+        <p>
+          Firm asking price is Tesla used/CPO list × 1.20. Email
+          <a href="mailto:howardjoseph1989@gmail.com?subject=Lot%20Catalog%20inquiry">howardjoseph1989@gmail.com</a>
+          with the VIN on the card.
+        </p>
+        <a class="cta" href="mailto:howardjoseph1989@gmail.com?subject=Lot%20Catalog%20inquiry">Open email</a>
+      </div>
+      <form class="inquiry" id="inquiry">
+        <label>
+          Your name
+          <input name="name" required autocomplete="name" />
+        </label>
+        <label>
+          Your email
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+        <label>
+          VIN / listing
+          <input name="vin" placeholder="SMPL…" />
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="4" required placeholder="I want to buy this vehicle at the listed firm price."></textarea>
+        </label>
+        <button type="submit" class="cta">Compose message</button>
+      </form>
+    </section>
+
+    <footer>
+      <p>
+        Lot Catalog is an independent reseller storefront. Not affiliated with Tesla, Inc.
+        Tesla names are used only to describe the vehicles offered. All prices are firm.
+      </p>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

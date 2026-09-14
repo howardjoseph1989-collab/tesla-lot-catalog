@@ -1,0 +1,12 @@
+{
+  "name": "tesla-lot-catalog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Independent Tesla used / CPO catalog with firm +20% pricing. Not Tesla, Inc.",
+  "type": "module",
+  "scripts": {
+    "fetch": "node scripts/fetch-inventory.mjs",
+    "test": "node --test scripts/test.mjs",
+    "serve": "python3 -m http.server 4173"
+  }
+}
